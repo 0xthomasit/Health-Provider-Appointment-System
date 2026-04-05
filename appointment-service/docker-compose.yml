@@ -1,0 +1,20 @@
+services:
+  mysql:
+    container_name: appointment-mysql-container
+    image: mysql:9.6.0
+    volumes:
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./docker/mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: appointment_service
+      MYSQL_USER: username
+      MYSQL_PASSWORD: password
+    ports:
+      - "3307:3306"
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network: # Define the custom network
+    driver: bridge
