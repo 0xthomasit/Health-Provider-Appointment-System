@@ -1,0 +1,18 @@
+services:
+  healthprovider-mongodb:
+    container_name: healthprovider-mongodb-container
+    image: mongo:8.0.20
+    volumes:
+      - ./docker/mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: healthprovider-db
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - "27017:27017"
+    networks:
+      - microservices-network # Attach the service to the microservices network
+
+networks:
+  microservices-network: # Define the custom network
+    driver: bridge
