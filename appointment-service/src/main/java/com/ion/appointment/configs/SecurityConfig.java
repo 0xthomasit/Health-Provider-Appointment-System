@@ -22,7 +22,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
+                // Add rule that forces every request must be 'authenticated'.
+                // We need to whitelist any request to which we want to bypass this authentication.
                 .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info").permitAll()
                         .anyRequest()
                         .authenticated()
                 )

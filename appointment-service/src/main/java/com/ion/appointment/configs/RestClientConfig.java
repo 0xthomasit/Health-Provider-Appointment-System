@@ -1,5 +1,6 @@
 package com.ion.appointment.configs;
 
+import com.ion.appointment.clients.HealthProviderClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

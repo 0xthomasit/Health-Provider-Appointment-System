@@ -1,6 +1,6 @@
 package com.ion.appointment.services;
 
-import com.ion.appointment.configs.HealthProviderClient;
+import com.ion.appointment.clients.HealthProviderClient;
 import com.ion.appointment.dtos.HealthProvider;
 import com.ion.appointment.models.Appointment;
 import com.ion.appointment.repositories.AppointmentRepository;
