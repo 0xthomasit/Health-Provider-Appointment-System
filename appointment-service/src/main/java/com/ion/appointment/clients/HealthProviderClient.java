@@ -3,6 +3,7 @@ package com.ion.appointment.clients;
 import com.ion.appointment.dtos.HealthProvider;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
+import io.github.resilience4j.retry.annotation.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,7 @@ public interface HealthProviderClient {
 
     @GetExchange("/api/v1/healthproviders/available")
     @CircuitBreaker(name = "healthProvider", fallbackMethod = "getGeneralProviders")
+    @Retry(name = "healthProvider")
     List<HealthProvider> getAvailableHealthProviders(@RequestParam LocalDate selectedDate, @RequestParam String department);
 
     default List<HealthProvider> getGeneralProviders(Throwable throwable) {
