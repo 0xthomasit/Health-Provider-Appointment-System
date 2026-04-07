@@ -32,28 +32,39 @@ public class CircuitBreakerHealthConfig {
                     builder.down();
                 }
 
-                circuitBreakers.forEach(cb -> builder.withDetail(cb.getName(),
-                        new CircuitBreakerDetail(
-                                cb.getMetrics().getFailureRate(), // Percentage
-                                cb.getCircuitBreakerConfig().getFailureRateThreshold(), // Percentage
-                                cb.getMetrics().getSlowCallRate(), // Percentage
-                                cb.getCircuitBreakerConfig().getSlowCallRateThreshold(), // Percentage
-                                cb.getMetrics().getNumberOfBufferedCalls(),
-                                cb.getMetrics().getNumberOfSlowCalls(),
-                                cb.getMetrics().getNumberOfSlowFailedCalls(),
-                                cb.getMetrics().getNumberOfFailedCalls(),
-                                cb.getMetrics().getNumberOfNotPermittedCalls(),
-                                cb.getState().name()
-                        )));
+                circuitBreakers.forEach(cb -> {
+                    String status = (cb.getState() == CircuitBreaker.State.OPEN || cb.getState() == CircuitBreaker.State.FORCED_OPEN) ? "DOWN" : "UP";
+                    builder.withDetail(cb.getName(), new CircuitBreakerStatus(
+                            status,
+                            new CircuitBreakerDetail(
+                                    cb.getMetrics().getFailureRate() + "%",
+                                    cb.getCircuitBreakerConfig().getFailureRateThreshold() + "%",
+                                    cb.getMetrics().getSlowCallRate() + "%",
+                                    cb.getCircuitBreakerConfig().getSlowCallRateThreshold() + "%",
+                                    cb.getMetrics().getNumberOfBufferedCalls(),
+                                    cb.getMetrics().getNumberOfSlowCalls(),
+                                    cb.getMetrics().getNumberOfSlowFailedCalls(),
+                                    cb.getMetrics().getNumberOfFailedCalls(),
+                                    cb.getMetrics().getNumberOfNotPermittedCalls(),
+                                    cb.getState().name()
+                            )
+                    ));
+                });
             }
         };
     }
 
+    record CircuitBreakerStatus(
+            String status,
+            CircuitBreakerDetail details
+    ) {
+    }
+
     record CircuitBreakerDetail(
-            float failureRate,
-            float failureRateThreshold,
-            float slowCallRate,
-            float slowCallRateThreshold,
+            String failureRate,
+            String failureRateThreshold,
+            String slowCallRate,
+            String slowCallRateThreshold,
             int bufferedCalls,
             int slowCalls,
             int slowFailedCalls,
