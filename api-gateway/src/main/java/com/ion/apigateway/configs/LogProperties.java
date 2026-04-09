@@ -1,4 +1,4 @@
-package com.ion.auth.configs;
+package com.ion.apigateway.configs;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -21,3 +21,9 @@ public class LogProperties {
         this.fileLocation = fileLocation;
     }
 }
+
+/*
+    Compile the project (Build > Rebuild Project in IntelliJ).
+    The processor will create a spring-configuration-metadata.json file in your build folder.
+    The IDE will read this file, and the warning should disappear
+*/

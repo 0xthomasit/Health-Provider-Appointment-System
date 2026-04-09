@@ -1,4 +1,4 @@
-package com.ion.auth.configs;
+package com.ion.appointment.configs;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
