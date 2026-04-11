@@ -1,0 +1,21 @@
+filebeat.inputs:
+  - type: filestream
+    enabled: true
+    id: health-provider-appointment
+    paths:
+      # Paths to the logs in each microservice's logs directory
+      - /microservices-logs/*/*.log
+
+processors:
+  - add_cloud_metadata: ~
+
+output.logstash:
+  hosts: ["logstash:5044"]
+
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644

@@ -1,4 +1,63 @@
 services:
+  elasticsearch:
+    image: elasticsearch:9.3.3
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false  # Make sure SSL is disabled
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m # Adjust heap size based on available memory
+    ports:
+      - "9200:9200"
+    networks:
+      - microservices-network # Attach the service to the microservices network
+
+  logstash:
+    image: logstash:9.3.3
+    container_name: logstash
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+    ports:
+      - "5044:5044" # Filebeat
+    environment:
+      - LS_JAVA_OPTS=-Xms256m -Xmx256m # Adjust heap size
+    depends_on:
+      - elasticsearch
+    networks:
+      - microservices-network # Attach the service to the microservices network
+
+  kibana:
+    image: kibana:9.3.3
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - microservices-network # Attach the service to the microservices network
+
+  filebeat:
+    image: elastic/filebeat:9.3.3
+    container_name: filebeat
+    user: root
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro  # Mount Filebeat config
+      - C:\\Users\\a5161787\\Downloads\\microservices-logs:/microservices-logs:ro  # Mount your host logs directory
+    depends_on:
+      - logstash
+    entrypoint:
+      - "/bin/sh"
+      - "-c"
+      - |
+        until curl -s http://elasticsearch:9200; do 
+          echo 'Waiting for Elasticsearch...'; 
+          sleep 2; 
+        done; 
+        # QUAN TRỌNG: Thêm flag --strict.perms=false ở cuối lệnh chạy
+        /usr/share/filebeat/filebeat -e -c /usr/share/filebeat/filebeat.yml --strict.perms=false
+    networks:
+      - microservices-network
+
   zipkin:
     image: openzipkin/zipkin:3.6.0
     container_name: zipkin-server
@@ -7,3 +66,9 @@ services:
     environment:
       - STORAGE_TYPE=mem
     restart: always
+    networks:
+      - microservices-network # Attach the service to the microservices network
+
+networks:
+  microservices-network: # Define the custom network
+    driver: bridge
