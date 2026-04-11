@@ -49,10 +49,10 @@ services:
       - "/bin/sh"
       - "-c"
       - |
-        until curl -s http://elasticsearch:9200; do 
-          echo 'Waiting for Elasticsearch...'; 
-          sleep 2; 
-        done; 
+        until curl -s http://elasticsearch:9200; do
+          echo 'Waiting for Elasticsearch...';
+          sleep 2;
+        done;
         # QUAN TRỌNG: Thêm flag --strict.perms=false ở cuối lệnh chạy
         /usr/share/filebeat/filebeat -e -c /usr/share/filebeat/filebeat.yml --strict.perms=false
     networks:
@@ -68,6 +68,24 @@ services:
     restart: always
     networks:
       - microservices-network # Attach the service to the microservices network
+
+  loki:
+    image: grafana/loki:main
+    command: [ '-config.file=/etc/loki/local-config.yaml' ]
+    ports:
+      - '3100:3100'
+    networks:
+      - microservices-network # Attach the service to the microservices network
+
+  prometheus:
+    image: prom/prometheus:v3.11.1
+    command:
+      - --enable-feature=exemplar-storage
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - '8090:9090'
 
 networks:
   microservices-network: # Define the custom network
